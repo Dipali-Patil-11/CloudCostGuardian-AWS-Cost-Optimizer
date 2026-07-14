@@ -32,6 +32,18 @@ This project demonstrates the practical implementation of multiple AWS cloud ser
 
 ---
 
+# 🏗️ System Architecture
+
+![Architecture](architecture/architecture-diagram.png)
+
+---
+
+# 🔄 Project Workflow
+
+![Workflow](architecture/workflow-diagram.png)
+
+---
+
 # ☁️ AWS Services Used
 
 - Amazon EC2
@@ -139,8 +151,15 @@ CloudCostGuardian-AWS/
 ├── index.html
 │
 ├── architecture/
+│   ├── architecture-diagram.png
+│   └── workflow-diagram.png
 │
 ├── screenshots/
+│   ├── dashboard.png
+│   ├── dashboard-summary.png
+│   ├── dynamodb-history.png
+│   ├── dynamodb-current-status.png
+│   └── cloudwatch-metrics.png
 │
 └── docs/
     └── deployment-guide.md
@@ -148,29 +167,62 @@ CloudCostGuardian-AWS/
 
 ---
 
+# 📷 Project Screenshots
+
+## Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+---
+
+## Dashboard Summary
+
+![Dashboard Summary](screenshots/dashboard-summary.png)
+
+---
+
+## DynamoDB Monitoring History
+
+![History](screenshots/dynamodb-history.png)
+
+---
+
+## DynamoDB Current Status
+
+![Current Status](screenshots/dynamodb-current-status.png)
+
+---
+
+## CloudWatch Custom Metrics
+
+![CloudWatch](screenshots/cloudwatch-metrics.png)
+
+---
+
 # 🚀 Project Flow
 
 ```
-EC2 Instances
-       │
-       ▼
-CloudWatch CPU Metrics
-       │
-       ▼
-AWS Lambda
-       │
- ┌─────┼───────────────┐
- │     │               │
- ▼     ▼               ▼
-DynamoDB           Amazon SNS
-(History &         Email Alerts
-Current Status)
-       │
-       ▼
-API Gateway
-       │
-       ▼
-CloudCost Guardian Dashboard
+                User
+                  │
+                  ▼
+      CloudCost Guardian Dashboard
+         (HTML + JavaScript)
+                  │
+                  ▼
+          Amazon API Gateway
+                  │
+                  ▼
+             AWS Lambda
+                  │
+      ┌───────────┼───────────┐
+      │           │           │
+      ▼           ▼           ▼
+ CloudWatch   DynamoDB       SNS
+ (Metrics)  (History &      (Email
+            Current)        Alerts)
+      │
+      ▼
+ Amazon EC2 Instances
 ```
 
 ---
