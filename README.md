@@ -34,7 +34,7 @@ This project demonstrates the practical implementation of multiple AWS cloud ser
 
 # 🏗️ System Architecture
 
-![Architecture](architecture/architecture-diagram.png)
+![Architecture](architecture/architecture.png)
 
 ---
 
@@ -151,15 +151,14 @@ CloudCostGuardian-AWS/
 ├── index.html
 │
 ├── architecture/
-│   ├── architecture-diagram.png
+│   ├── architecture.png
 │   └── workflow-diagram.png
 │
 ├── screenshots/
 │   ├── dashboard.png
-│   ├── dashboard-summary.png
-│   ├── dynamodb-history.png
-│   ├── dynamodb-current-status.png
-│   └── cloudwatch-metrics.png
+│   ├── dynamodb.png
+│   ├── cloudwatch.png
+│   └── sns-email.png
 │
 └── docs/
     └── deployment-guide.md
@@ -175,27 +174,21 @@ CloudCostGuardian-AWS/
 
 ---
 
-## Dashboard Summary
+## DynamoDB Monitoring
 
-![Dashboard Summary](screenshots/dashboard-summary.png)
-
----
-
-## DynamoDB Monitoring History
-
-![History](screenshots/dynamodb-history.png)
-
----
-
-## DynamoDB Current Status
-
-![Current Status](screenshots/dynamodb-current-status.png)
+![DynamoDB](screenshots/dynamodb.png)
 
 ---
 
 ## CloudWatch Custom Metrics
 
-![CloudWatch](screenshots/cloudwatch-metrics.png)
+![CloudWatch](screenshots/cloudwatch.png)
+
+---
+
+## SNS Email Alerts
+
+![SNS Email](screenshots/sns-email.png)
 
 ---
 
