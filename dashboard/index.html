@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudCost Guardian Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif}
+body{background:#0b1220;color:#eef2ff}
+header{padding:24px;background:linear-gradient(90deg,#1e3a8a,#2563eb)}
+header h1{font-size:32px}
+header p{opacity:.9;margin-top:6px}
+.container{max-width:1400px;margin:auto;padding:24px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin:20px 0}
+.card{background:#162033;border-radius:16px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.card h3{color:#9fb3d9;font-size:15px}
+.card .value{font-size:34px;font-weight:700;margin-top:10px}
+.toolbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:20px 0}
+input,select{padding:10px 12px;border:none;border-radius:10px;font-size:15px}
+button{padding:10px 18px;border:none;border-radius:10px;background:#2563eb;color:#fff;cursor:pointer}
+button:hover{background:#1d4ed8}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.panel{background:#162033;border-radius:16px;padding:16px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid #2f3f5c}
+th{background:#23314d;position:sticky;top:0}
+.badge{padding:4px 10px;border-radius:20px;font-size:13px;font-weight:700}
+.run{background:#14532d}.stop{background:#7f1d1d}
+.healthy{background:#166534}.under{background:#b91c1c}
+footer{text-align:center;color:#9fb3d9;padding:20px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="container">
+<h1>☁ CloudCost Guardian</h1>
+<p>AWS Multi-Instance Cost Optimization Dashboard</p>
+</div>
+</header>
+
+<div class="container">
+
+<div class="cards">
+<div class="card"><h3>Total Instances</h3><div class="value" id="total">0</div></div>
+<div class="card"><h3>Running</h3><div class="value" id="running">0</div></div>
+<div class="card"><h3>Stopped</h3><div class="value" id="stopped">0</div></div>
+<div class="card"><h3>Underutilized</h3><div class="value" id="under">0</div></div>
+</div>
+
+<div class="toolbar">
+<div>
+<input id="search" placeholder="Search instance..." onkeyup="render()">
+<select id="filter" onchange="render()">
+<option>All</option>
+<option>running</option>
+<option>stopped</option>
+<option>Underutilized</option>
+</select>
+</div>
+<div>
+<button onclick="load()">Refresh</button>
+</div>
+</div>
+
+<div class="grid">
+<div class="panel table-wrap">
+<table>
+<thead>
+<tr>
+<th>Name</th><th>Instance ID</th><th>State</th><th>CPU %</th><th>Recommendation</th><th>Status</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<div class="panel">
+<canvas id="chart"></canvas>
+<p style="margin-top:15px"><b>Last Updated</b></p>
+<p id="updated">--</p>
+<p style="margin-top:15px"><b>Auto Refresh</b></p>
+<p>Every 30 Seconds</p>
+</div>
+</div>
+
+</div>
+
+<footer>CloudCost Guardian • AWS EC2 Monitoring Dashboard</footer>
+
+<script>
+const API="https://q2mnj615c1.execute-api.ap-south-1.amazonaws.com/prod/status";
+let rows=[];
+let chart;
+
+async function load(){
+ const res=await fetch(API);
+ rows=await res.json();
+ updateCards();
+ render();
+}
+
+function updateCards(){
+ let run=rows.filter(r=>r.State==="running").length;
+ let stop=rows.filter(r=>r.State==="stopped").length;
+ let under=rows.filter(r=>r.Status==="Underutilized").length;
+ document.getElementById("total").textContent=rows.length;
+ document.getElementById("running").textContent=run;
+ document.getElementById("stopped").textContent=stop;
+ document.getElementById("under").textContent=under;
+ document.getElementById("updated").textContent=new Date().toLocaleString();
+
+ const ctx=document.getElementById("chart");
+ if(chart) chart.destroy();
+ chart=new Chart(ctx,{
+   type:"doughnut",
+   data:{labels:["Running","Stopped"],datasets:[{data:[run,stop]}]},
+   options:{plugins:{legend:{labels:{color:"white"}}}}
+ });
+}
+
+function render(){
+ const term=document.getElementById("search").value.toLowerCase();
+ const filter=document.getElementById("filter").value;
+ const body=document.getElementById("tbody");
+ body.innerHTML="";
+ rows.filter(r=>{
+   const match=(r.InstanceName.toLowerCase().includes(term)||r.InstanceId.toLowerCase().includes(term));
+   let ok=true;
+   if(filter==="running") ok=r.State==="running";
+   else if(filter==="stopped") ok=r.State==="stopped";
+   else if(filter==="Underutilized") ok=r.Status==="Underutilized";
+   return match&&ok;
+ }).forEach(r=>{
+   body.innerHTML+=`<tr>
+   <td>${r.InstanceName}</td>
+   <td>${r.InstanceId}</td>
+   <td><span class="badge ${r.State==="running"?"run":"stop"}">${r.State}</span></td>
+   <td>${r.CPUUtilization}%</td>
+   <td>${r.Recommendation}</td>
+   <td><span class="badge ${r.Status==="Healthy"?"healthy":"under"}">${r.Status}</span></td>
+   </tr>`;
+ });
+}
+load();
+setInterval(load,30000);
+</script>
+</body>
+</html>
