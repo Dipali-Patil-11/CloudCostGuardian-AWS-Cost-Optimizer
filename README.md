@@ -13,7 +13,7 @@
 
 CloudCost Guardian is a serverless AWS monitoring application that continuously monitors all EC2 instances in an AWS account.
 
-The system automatically analyzes CloudWatch CPU utilization metrics, identifies underutilized EC2 instances, stores monitoring data in DynamoDB, sends email notifications using Amazon SNS, and displays the complete monitoring information on a real-time web dashboard.
+The system automatically analyzes CloudWatch CPU utilization metrics, identifies underutilized EC2 instances, stores monitoring history in DynamoDB, publishes custom CloudWatch metrics, sends a consolidated Amazon SNS summary email containing all underutilized instances, and displays the monitoring information through a real-time web dashboard.
 
 This project demonstrates the practical implementation of multiple AWS cloud services working together to optimize cloud infrastructure costs.
 
@@ -79,9 +79,19 @@ If CPU Utilization < 10%
 
 ---
 
-✅ Email Notifications
+✅ Email Summary Notifications
 
-Amazon SNS sends an email alert whenever an underutilized running instance is detected.
+Amazon SNS sends a single summary email listing all underutilized EC2 instances detected during a monitoring cycle.
+
+The summary includes:
+
+• Total Running Instances
+• Total Stopped Instances
+• Underutilized Instance Count
+• Instance Name
+• Instance ID
+• CPU Utilization
+• Optimization Recommendation
 
 ---
 
@@ -137,6 +147,7 @@ Displays
 - Recommendations
 - Search & Filter
 - Auto Refresh
+- Consolidated SNS Email Summary
 
 ---
 
@@ -195,27 +206,29 @@ CloudCostGuardian-AWS/
 # 🚀 Project Flow
 
 ```
-                User
-                  │
-                  ▼
-      CloudCost Guardian Dashboard
-         (HTML + JavaScript)
-                  │
-                  ▼
-          Amazon API Gateway
-                  │
-                  ▼
-             AWS Lambda
-                  │
-      ┌───────────┼───────────┐
-      │           │           │
-      ▼           ▼           ▼
- CloudWatch   DynamoDB       SNS
- (Metrics)  (History &      (Email
-            Current)        Alerts)
-      │
-      ▼
- Amazon EC2 Instances
+EC2 Instances
+       │
+       ▼
+CloudWatch CPU Metrics
+       │
+       ▼
+AWS Lambda
+       │
+ ┌─────┼────────────────────────────┐
+ │     │                            │
+ ▼     ▼                            ▼
+DynamoDB                 Amazon SNS Summary
+(History &               (Single Email Report)
+Current Status)
+       │
+       ▼
+CloudWatch Custom Metrics
+       │
+       ▼
+API Gateway
+       │
+       ▼
+CloudCost Guardian Dashboard
 ```
 
 ---
@@ -232,13 +245,14 @@ CloudCostGuardian-AWS/
 
 # 📈 Future Enhancements
 
-- Automatic EC2 Stop/Start
-- Cost Estimation Dashboard
-- Multi-Region Monitoring
-- AWS Cost Explorer Integration
-- CloudWatch Alarms
-- User Authentication
-- Historical Analytics Dashboard
+• Automatic EC2 Stop/Start
+• AWS Cost Explorer Integration
+• Multi-Region Monitoring
+• CloudWatch Alarms
+• Slack & Microsoft Teams Notifications
+• Weekly Cost Optimization Reports
+• User Authentication
+• Historical Trend Analysis
 
 ---
 

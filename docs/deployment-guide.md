@@ -162,9 +162,9 @@ Create Topic
 CostOptimizerAlerts
 ```
 
-Create Email Subscription
+Create an Email Subscription and confirm it.
 
-Confirm the email subscription.
+The Lambda function sends a single summary email containing all underutilized EC2 instances detected during the monitoring cycle.
 
 ---
 
@@ -256,7 +256,8 @@ Expected Result
 - Read CloudWatch CPU metrics
 - Store data in DynamoDB
 - Publish CloudWatch metrics
-- Send SNS alerts
+- Generate a summary of all underutilized EC2 instances.
+- Send one consolidated SNS email report.
 - Return JSON
 
 ---
@@ -325,7 +326,15 @@ Metrics
 
 Verify SNS
 
-Receive email alert whenever a running EC2 instance has CPU utilization below 10%.
+Receive one summary email containing:
+
+• Running Instances
+• Stopped Instances
+• Underutilized Instances
+• Instance Name
+• Instance ID
+• CPU Utilization
+• Recommendation
 
 ---
 
@@ -333,13 +342,14 @@ Receive email alert whenever a running EC2 instance has CPU utilization below 10
 
 The system successfully
 
-- Discovers all EC2 instances
-- Reads CloudWatch CPU metrics
-- Identifies underutilized resources
-- Stores monitoring history
-- Maintains latest instance status
-- Sends email notifications
-- Displays a live monitoring dashboard
+• Discovers all EC2 instances
+• Reads CloudWatch CPU utilization metrics
+• Identifies underutilized EC2 instances
+• Stores complete monitoring history
+• Maintains the latest instance status
+• Publishes custom CloudWatch metrics
+• Sends a consolidated SNS summary email
+• Displays a real-time monitoring dashboard
 
 ---
 
